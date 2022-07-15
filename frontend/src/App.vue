@@ -20,13 +20,23 @@ export default {
   },
   data() {
     return {
-      backend_url: `${process.env.VUE_APP_HOST_ADDR}:${process.env.VUE_APP_PORT_BACK}`,
+      // backend_url: `${process.env.VUE_APP_HOST_ADDR}:${process.env.VUE_APP_PORT_BACK}`,
+      backend_url: `http://192.168.74.171:8080`,
     };
   },
   provide() {
     return {
       backend_url: this.backend_url,
+      cvtSize: this.cvtSize,
     };
+  },
+  methods: {
+    cvtSize(str) {
+      const map = {'0': 1, 'K': 1e3, 'M': 1e6, 'G': 1e9, 'T': 1e12}
+      var str = str.replace("B", "");
+      let unit = str.slice(-1);
+      return (unit === '0') ? 0 : parseFloat(str.slice(0,-1)) * map[unit]
+    }
   }
 }
 </script>

@@ -9,7 +9,11 @@
       </h1>
       <p>Last Updated: {{lastUpdated}}</p>
       <b-overlay :show="refreshing">
-        <b-table striped hover :items="allGPUs"></b-table>
+      <b-table striped hover :items="allGPUs" :fields="fields">
+        <template #cell(Used(%))="row">
+          <b-progress :value="cvtSize(row.item.Used)" :max="cvtSize(row.item.Size)" show-progress />
+        </template>
+      </b-table>
       </b-overlay>
     </div>
     <div id="gpu_detailed">
@@ -36,6 +40,7 @@ export default {
   name: "SpaceTab",
   data() {
     return {
+      fields: ['host', 'Size', 'Used', 'Used(%)'],
       allGPUs: [],
       refreshing: false,
       lastUpdated: "none",
@@ -64,7 +69,7 @@ export default {
   mounted() {
     this.get_GPUs()
   },
-  inject: ["backend_url"],
+  inject: ["backend_url", "cvtSize"],
   methods: {
     get_GPUs() {
       axios

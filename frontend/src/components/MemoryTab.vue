@@ -9,7 +9,11 @@
       </h1>
       <p>Last Updated: {{lastUpdated}}</p>
       <b-overlay :show="refreshing">
-        <b-table striped hover :items="allMemories"></b-table>
+      <b-table striped hover :items="allMemories" :fields="fields">
+        <template #cell(Used(%))="row">
+          <b-progress :value="cvtSize(row.item.used)" :max="cvtSize(row.item.total)" show-progress />
+        </template>
+      </b-table>
       </b-overlay>
     </div>
   </div>
@@ -22,6 +26,7 @@ export default {
   name: "MemoryTab",
   data() {
     return {
+      fields: ['host', 'total', 'used', 'free', 'shared', 'buff/cache', 'available', 'Used(%)'],
       allMemories: [],
       refreshing: false,
       lastUpdated: "none",
@@ -30,7 +35,7 @@ export default {
   mounted() {
     this.get_memories()
   },
-  inject: ["backend_url"],
+  inject: ["backend_url", "cvtSize"],
   methods: {
     get_memories() {
       axios

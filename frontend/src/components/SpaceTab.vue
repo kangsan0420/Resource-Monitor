@@ -9,7 +9,11 @@
       </h1>
       <p>Last Updated: {{lastUpdated}}</p>
       <b-overlay :show="refreshing">
-        <b-table striped hover :items="allSpaces"></b-table>
+      <b-table striped hover :items="allSpaces" :fields="fields">
+        <template #cell(Used(%))="row">
+          <b-progress :value="cvtSize(row.item.Used)" :max="cvtSize(row.item.Size)" show-progress />
+        </template>
+      </b-table>
       </b-overlay>
     </div>
     <div id="space_detailed">
@@ -29,6 +33,7 @@ export default {
   name: "SpaceTab",
   data() {
     return {
+      fields: ['host', 'Size', 'Used', 'Used(%)'],
       allSpaces: [],
       refreshing: false,
       lastUpdated: "none",
@@ -54,7 +59,7 @@ export default {
   mounted() {
     this.get_spaces()
   },
-  inject: ["backend_url"],
+  inject: ["backend_url", "cvtSize"],
   methods: {
     get_spaces() {
       axios

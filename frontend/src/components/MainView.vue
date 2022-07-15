@@ -19,7 +19,7 @@ export default {
   components: {
     SpaceTab,
     MemoryTab,
-    GPUTab
+    GPUTab,
   },
 }
 </script>
