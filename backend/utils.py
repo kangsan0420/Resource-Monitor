@@ -44,4 +44,3 @@ def megabytes_to_formatted(float_number):
     factor = int(np.log10(float_number))//3
     formatted = f"{float_number * 10**(-factor*3):.1f}{maps[factor]}".replace('.0', '')
     return formatted
-    

@@ -4,6 +4,7 @@ import paramiko
 import re
 from tqdm.auto import tqdm
 from . import utils
+# import utils
 import itertools
 
 # ssh.py
@@ -36,12 +37,17 @@ def get_memories(server_ids):
         rtn.append(info)
     return rtn
 
-
 def get_gpu_processes(server_id):
     exp = '^\|\s+(?P<gpu>\d+)\s+N/A\s+N/A\s+(?P<pid>\d+)\s+C\s+(?P<name>[\S]*)\s+(?P<used>\d+)MiB \|$'
     txt = bash(server_id, 'nvidia-smi')
     g = re.findall(exp, txt, flags=re.MULTILINE) or []
     g = [{'GPU': int(gpu), 'PID': int(pid), 'Name': name, 'Used': utils.megabytes_to_formatted(int(alloc))} for gpu, pid, name, alloc in g]
+    for i in range(len(g)):
+        line = bash(server_id, 'cat /proc/%s/cgroup' % g[i]['PID']).split('\n')[0]
+        idx = line.find('docker-')
+        container_id = line[idx+7:].replace('.scope', '')
+        container_name = bash(server_id, 'docker ps --no-trunc | grep %s' % container_id).split()[-1]
+        g[i]['container'] = container_name
     return g
 
 def get_gpu_detailed(server_id):
