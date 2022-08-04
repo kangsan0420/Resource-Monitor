@@ -1,33 +1,26 @@
 <template>
   <div>
-    <div id="gpus">
+    <div id="containers">
       <h1>
-        GPUs
-        <b-button pill variant="outline-dark" @click="get_GPUs_refresh">
+        Containers
+        <b-button pill variant="outline-dark" @click="get_container_refresh">
           <b-icon icon="arrow-clockwise" aria-hidden="true" :animation="refreshing ? 'spin' : 'none'"/>
         </b-button>
       </h1>
       <p>Last Updated: {{lastUpdated}}</p>
       <b-overlay :show="refreshing">
-      <b-table striped hover :items="allGPUs" :fields="fields">
+      <b-table striped hover :items="allContainers" :fields="fields">
         <template #cell(Used(%))="row">
           <b-progress :value="cvtSize(row.item.Used)" :max="cvtSize(row.item.Size)" show-progress />
         </template>
       </b-table>
       </b-overlay>
     </div>
-    <div id="gpu_detailed">
+    <div id="container_detailed">
       <h1>Detailed</h1>
-      <b-form-select v-model="detailedSelectedHost" :options="hosts" @change="get_gpu_detailed"></b-form-select>
+      <b-form-select v-model="selectedHost" :options="hosts" @change="get_container_detail"></b-form-select>
       <b-overlay :show="gettingDetailed">
         <b-table striped hover :items="detailed"></b-table>
-      </b-overlay>
-    </div>
-    <div id="gpu_processes">
-      <h1>Processes</h1>
-      <b-form-select v-model="processesSelectedHost" :options="hosts" @change="get_gpu_processes"></b-form-select>
-      <b-overlay :show="gettingProcesses">
-        <b-table striped hover :items="processes"></b-table>
       </b-overlay>
     </div>
   </div>
@@ -37,28 +30,25 @@
 import axios from "axios";
 
 export default {
-  name: "SpaceTab",
+  name: "ContainerTab",
   data() {
     return {
-      fields: ['host', 'Size', 'Used', 'Used(%)'],
-      allGPUs: [],
+      fields: ['Host', 'Active', 'Exited'],
+      allContainers: [],
       refreshing: false,
       lastUpdated: "none",
-      detailedSelectedHost: null,
+      selectedHost: null,
       detailed: [],
       gettingDetailed: false,
-      processesSelectedHost: null,
-      processes: [],
-      gettingProcesses: false,
     }
   },
   computed: {
     hosts() {
       let newDicts = [{ value: null, text: "Please select a host" }]
 
-      this.allGPUs.forEach(function (item, index, array) {
+      this.allContainers.forEach(function (item, index, array) {
         for (const [key, value] of Object.entries(item)) {
-          if (key == "host") { 
+          if (key == "Host") { 
             newDicts.push({"value": item[key], "text": item[key]})
           }
         }
@@ -67,28 +57,28 @@ export default {
     },
   },
   mounted() {
-    this.get_GPUs()
+    this.get_containers()
   },
   inject: ["backend_url", "cvtSize"],
   methods: {
-    get_GPUs() {
+    get_containers() {
       axios
-        .get(this.backend_url + "/gpu")
+        .get(this.backend_url + "/container")
         .then((response) => {
           this.lastUpdated = response.data["time"]
-          this.allGPUs = response.data["data"]
+          this.allContainers = response.data["data"]
         })
         .catch((error) => {
           console.log("Error:", error)
         });
     },
-    get_GPUs_refresh() {
+    get_container_refresh() {
       this.refreshing = true
       axios
-        .get(this.backend_url + "/gpu/refresh")
+        .get(this.backend_url + "/container/refresh")
         .then((response) => {
           this.lastUpdated = response.data["time"]
-          this.allGPUs = response.data["data"]
+          this.allContainers = response.data["data"]
         })
         .catch((error) => {
           console.log("Error:", error)
@@ -97,11 +87,11 @@ export default {
           this.refreshing = false
         });
     },
-    get_gpu_detailed() {
-      if (this.detailedSelectedHost) {
+    get_container_detail() {
+      if (this.selectedHost) {
         this.gettingDetailed = true
         axios
-          .get(this.backend_url + "/gpu/detail?host=" + this.detailedSelectedHost)
+          .get(this.backend_url + "/container/detail?host=" + this.selectedHost)
           .then((response) => {
             this.detailed = response.data
           })
@@ -114,25 +104,6 @@ export default {
       }
       else {
         this.detailed = []
-      }
-    },
-    get_gpu_processes() {
-      if (this.processesSelectedHost) {
-        this.gettingProcesses = true
-        axios
-          .get(this.backend_url + "/gpu/processes?host=" + this.processesSelectedHost)
-          .then((response) => {
-            this.processes = response.data
-          })
-          .catch((error) => {
-            console.log("Error:", error)
-          })
-          .finally(() => {
-            this.gettingProcesses = false
-          });
-      }
-      else {
-        this.processes = []
       }
     },
   }

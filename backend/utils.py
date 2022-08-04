@@ -5,8 +5,14 @@ import os
 def getTime():
     return datetime.now().isoformat()
 
+def deleteOldFiles(files, keep=25):
+    for fname in files[keep:]:
+        os.remove(fname)
+    return files[:keep]
+
 def getRecentFile(category):
     files = sorted(['logs/'+f for f in os.listdir('logs') if f.startswith(category)], reverse=True)
+    files = deleteOldFiles(files)
     return files[0] if len(files) > 0 else None
 
 def flatten(json):

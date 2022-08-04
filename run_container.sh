@@ -1,1 +1,1 @@
-docker run -d -v ${PWD}/server_ids.conf:/app/config/server_ids.conf -e TZ=Asia/Seoul -e HOST_ADDR=http://192.168.74.171 -e PORT_BACK=8080 -p 80:80 -p 8080:8080 --name resource-monitor mnc_resource_monitor:v1.0
+docker run -d -v ${PWD}/server_ids.conf:/app/config/server_ids.conf -e TZ=Asia/Seoul -e HOST_ADDR="http://$(hostname -i)" -e PORT_BACK=8080 -p 9040:80 -p 8080:8080 --name resource-monitor mnc_resource_monitor:v1.0

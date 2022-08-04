@@ -1,7 +1,10 @@
+# python 3.10
+
 import paramiko
 import re
 from tqdm.auto import tqdm
 from . import utils
+import itertools
 
 # ssh.py
 def bash(host_user_pw, command):
@@ -95,4 +98,20 @@ def get_spaces(server_ids):
         rtn.append(info)
     return rtn
 
+def get_containers(server_ids):
+    rtn = []
+    for server_id in tqdm(server_ids):
+        lines = bash(server_id, 'docker ps -a').split('\n')
+        exited, total = len(list(filter(lambda x: ' Exited (' in x, lines))), len(lines)-1
+        active = total - exited
+        rtn.append({'Host': server_id.split()[0], 'Active': active, 'Exited': exited})
+    return rtn
 
+def get_container_detailed(server_id, sizes=True):
+    items = ['CONTAINER ID', 'IMAGE', 'COMMAND', 'CREATED', 'STATUS', 'PORTS', 'NAMES', 'SIZE']
+    lines = bash(server_id, 'docker ps --no-trunc' + ' -as' if sizes else '').split('\n')
+    indices = [lines[0].find(item) for item in items] + [9999]
+    struct = [[line[a:b].strip() for a, b in itertools.pairwise(indices)] for line in lines]
+    cols, struct = struct[0], struct[1:]
+    data = [{col: item for col, item in zip(cols, line)} for line in struct]
+    return data

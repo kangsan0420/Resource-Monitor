@@ -2,7 +2,7 @@
   <div>
     <div id="spaces">
       <h1>
-        All Spaces
+        Spaces
         <b-button pill variant="outline-dark" @click="get_space_refresh">
           <b-icon icon="arrow-clockwise" aria-hidden="true" :animation="refreshing ? 'spin' : 'none'"/>
         </b-button>

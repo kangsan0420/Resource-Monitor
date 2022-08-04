@@ -2,7 +2,7 @@
   <div>
     <div id="memories">
       <h1>
-        All Memories
+        Memories
         <b-button pill variant="outline-dark" @click="get_memories_refresh">
           <b-icon icon="arrow-clockwise" aria-hidden="true" :animation="refreshing ? 'spin' : 'none'"/>
         </b-button>

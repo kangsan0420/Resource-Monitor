@@ -20,8 +20,7 @@ export default {
   },
   data() {
     return {
-      // backend_url: `${process.env.VUE_APP_HOST_ADDR}:${process.env.VUE_APP_PORT_BACK}`,
-      backend_url: `http://192.168.74.171:8080`,
+      backend_url: `${process.env.VUE_APP_HOST_ADDR}:${process.env.VUE_APP_PORT_BACK}`,
     };
   },
   provide() {
