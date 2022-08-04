@@ -7,6 +7,7 @@ from . import ssh
 from . import utils
 
 import os
+os.makedirs('./backend/logs', exist_ok=True)
 os.chdir('./backend')
 
 app = FastAPI()
