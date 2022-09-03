@@ -1,5 +1,11 @@
 # Resource-Monitor
 
+
+<p align="center">
+    <img src="./capture/gpu.png" alt="loading..." width=800px>
+    <img src="./capture/container.png" alt="loading..." width=800px>
+</p>
+
 ## Get the source
 ```
 git clone https://github.com/kangsan0420/Resource-Monitor
